@@ -1,3 +1,3 @@
-# WasteNot Hub
+# SavorSignal Bot
 
-This repository contains the code for the Notifier Portal - a front end interface for the notifiers.
+This repository contains the code for the End User Interface.
