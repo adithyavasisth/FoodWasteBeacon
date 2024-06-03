@@ -3,8 +3,9 @@ const express = require("express");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const passport = require("./src/auth/passportConfig");
-const { client, connect } = require("./src/db/connection");
+const { connect } = require("./src/db/connection");
 const authRoutes = require("./src/routes/authRoutes");
+const lisitingsRoutes = require("./src/routes/listingsRoutes");
 const config = require("./config/dbconfig");
 
 const app = express();
@@ -33,11 +34,13 @@ app.use(passport.session());
 app.get("/", (req, res) => {
   res.send("Hello World!");
   if (req.user && req.user.username) {
-    console.log(`User logged in: ${req.user.username}`);
+    console.log(`User logged in: ${req.user.username}`)
   }
 });
 
 app.use("/auth", authRoutes);
+
+app.use("/listing", lisitingsRoutes);
 
 app.listen(port, async () => {
   console.log(`API running at http://localhost:${port}`);

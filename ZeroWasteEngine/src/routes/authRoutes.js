@@ -1,47 +1,27 @@
 const express = require("express");
+const authController = require("../controllers/authentication/authController");
 const passport = require("../auth/passportConfig");
-const { createUser } = require("../db/models/user");
 const router = express.Router();
 
-router.post("/register", async (req, res) => {
-  console.log(req.body);
-  const { username, password } = req.body;
-  try {
-    const user = await createUser(username, password);
-    req.login(user, (err) => {
-      if (err) {
-        res.status(500).send("Error logging in");
-      } else {
-        res.status(201).send("User created");
-      }
-    });
-  } catch (err) {
-    res.status(400).send(err.message);
-  }
-});
+/**
+ * Express router for handling authentication routes.
+ * @module authRoutes
+ */
+
+router.post("/register", authController.registerUser);
 
 router.post(
   "/login",
   passport.authenticate("local", {
-    // successRedirect: "/",
+    successRedirect: "/",
     failureRedirect: "/login",
     failureFlash: false, // Set to true if using connect-flash for flash messages
   }),
-  (req, res) => {
-    console.log(req.user);
-    res.redirect("/");
-  }
+  authController.loginUser
 );
 
-router.get("/logout", (req, res) => {
-  res.clearCookie("connect.sid");
-  req.logout(() => {
-    console.log("Logged out.");
-    req.session.destroy(() => {
-      res.send(); 
-    });
-  });
-  res.redirect("/");
-});
+router.get("/logout", authController.logoutUser);
+
+router.put("/update", authController.updateUserDetails);
 
 module.exports = router;
