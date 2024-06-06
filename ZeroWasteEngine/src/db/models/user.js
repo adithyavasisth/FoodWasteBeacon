@@ -1,6 +1,6 @@
 const { ObjectId } = require("mongodb");
 const { client } = require("../connection");
-const bcrypt = require("bcryptjs");
+const bcrypt = require("bcrypt");
 
 async function createUser(email, username, password) {
   const existingUser = await findUser(username);

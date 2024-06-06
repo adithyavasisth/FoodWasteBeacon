@@ -5,8 +5,12 @@ const MongoStore = require("connect-mongo");
 const passport = require("./src/auth/passportConfig");
 const { connect } = require("./src/db/connection");
 const authRoutes = require("./src/routes/authRoutes");
-const lisitingsRoutes = require("./src/routes/listingsRoutes");
+const listingsRoutes = require("./src/routes/listingsRoutes");
+const botRoutes = require("./src/routes/botRoutes");
 const config = require("./config/dbconfig");
+const {
+  bot,
+} = require("./src/controllers/bot/botController");
 
 const app = express();
 const port = 3000;
@@ -33,19 +37,23 @@ app.use(passport.session());
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
-  if (req.user && req.user.username) {
-    console.log(`User logged in: ${req.user.username}`)
-  }
 });
 
 app.use("/auth", authRoutes);
 
-app.use("/listing", lisitingsRoutes);
+app.use(
+  "/listing",
+  passport.authenticate("jwt", { session: false }),
+  listingsRoutes
+);
+
+app.use("/bot", botRoutes);
 
 app.listen(port, async () => {
   console.log(`API running at http://localhost:${port}`);
   try {
     await connect();
+    bot.launch();
   } catch (err) {
     console.error("Error connecting to MongoDB", err);
   }

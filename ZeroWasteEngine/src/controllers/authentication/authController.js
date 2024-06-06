@@ -1,4 +1,6 @@
+const jwt = require("jsonwebtoken");
 const { createUser, updateUser } = require("../../db/models/user");
+const passport = require("../../auth/passportConfig");
 
 async function registerUser(req, res) {
   const { email, username, password } = req.body;
@@ -17,7 +19,21 @@ async function registerUser(req, res) {
 }
 
 async function loginUser(req, res) {
-  res.redirect("/");
+  passport.authenticate("local", { session: false }, (err, user, info) => {
+    if (err || !user) {
+      return res
+        .status(400)
+        .json({ message: "Something is not right", user: user });
+    }
+    req.login(user, { session: false }, (err) => {
+      if (err) {
+        res.send(err);
+      }
+      jwt_body = { _id: user._id, email: user.email, username: user.username };
+      const token = jwt.sign(jwt_body, process.env.JWT_SECRET);
+      return res.json({ token });
+    });
+  })(req, res);
 }
 
 async function logoutUser(req, res) {

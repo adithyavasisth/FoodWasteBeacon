@@ -10,18 +10,10 @@ const router = express.Router();
 
 router.post("/register", authController.registerUser);
 
-router.post(
-  "/login",
-  passport.authenticate("local", {
-    successRedirect: "/",
-    failureRedirect: "/login",
-    failureFlash: false, // Set to true if using connect-flash for flash messages
-  }),
-  authController.loginUser
-);
+router.post("/login", authController.loginUser);
 
 router.get("/logout", authController.logoutUser);
 
-router.put("/update", authController.updateUserDetails);
+router.put("/update", passport.authenticate('jwt', { session: false }), authController.updateUserDetails);
 
 module.exports = router;

@@ -17,6 +17,7 @@ async function createFoodListing(req, res) {
       availabilityTime,
       req.user._id.toString()
     );
+    console.log(listing);
     res.status(201).send(listing);
   } catch (err) {
     res.status(400).send(err.message);
