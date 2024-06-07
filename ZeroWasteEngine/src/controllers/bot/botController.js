@@ -1,4 +1,4 @@
-const { Telegraf } = require("telegraf");
+const { Telegraf, Markup } = require("telegraf");
 const {
   createSubscriber,
   deleteSubscriber,
@@ -6,7 +6,10 @@ const {
   findSubscriberByUserId,
   getSubscribers,
 } = require("../../db/models/subscribers");
-const { findListingById, updateListing } = require("../../db/models/listings");
+const {
+  findListingById,
+  updateInterestCount,
+} = require("../../db/models/listings");
 require("dotenv").config();
 
 const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
@@ -51,41 +54,59 @@ async function previewMessage(req, res) {
   }
 }
 
-async function updateMessage(req, res) {
-  try {
-    const { id } = req.params;
-    const listing = await findListingById(id);
-    listing.message = req.body.message;
-    await updateListing(
-      id,
-      listing.foodType,
-      listing.quantity,
-      listing.location,
-      listing.availabilityTime,
-      listing.message
-    );
-    res.status(200).json({ message: "Message updated" });
-  } catch (err) {
-    res.status(500).json({ error: "Failed to update message" });
-  }
-}
-
 async function sendMessage(req, res) {
   try {
     const { id } = req.params;
     const listing = await findListingById(id);
 
     const subscribers = await getSubscribers();
+    const options = {
+      ...Markup.inlineKeyboard([
+        Markup.button.callback(
+          "Interested",
+          JSON.stringify({
+            action: "interested",
+            listingId: id,
+          })
+        ),
+        Markup.button.callback(
+          "Not Interested",
+          JSON.stringify({
+            action: "not",
+            listingId: id,
+          })
+        ),
+      ]),
+      parse_mode: "MarkdownV2",
+    };
     subscribers.forEach(async (subscriber) => {
-      await bot.telegram.sendMessage(subscriber.user_id, listing.message, {
-        parse_mode: "MarkdownV2",
-      });
+      await bot.telegram.sendMessage(
+        subscriber.user_id,
+        listing.message,
+        options
+      );
     });
     res.status(200).json({ message: "Notification sent" });
   } catch (err) {
     res.status(500).json({ error: "Failed to send notification" });
   }
 }
+
+bot.on("callback_query", async (ctx) => {
+  const { action, listingId } = JSON.parse(ctx.update.callback_query.data);
+  const { userId } = ctx.update.callback_query.from;
+
+  if (action === "interested") {
+    await updateInterestCount(listingId, userId);
+    await ctx.reply(
+      "Thank you for your interest! We have noted your response."
+    );
+  } else if (action === "not_interested") {
+    ctx.reply("Thank you for letting us know.");
+  }
+
+  ctx.editMessageReplyMarkup(undefined);
+});
 
 bot.start((ctx) => {
   return ctx.reply(`Hello ${ctx.update.message.from.first_name}!`);
@@ -97,5 +118,4 @@ module.exports = {
   unsubscribe,
   sendMessage,
   previewMessage,
-  updateMessage,
 };

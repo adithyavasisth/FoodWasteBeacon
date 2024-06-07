@@ -8,16 +8,18 @@ const {
 } = require("../../db/models/listings");
 
 async function createFoodListing(req, res) {
-  const { foodType, quantity, location, availabilityTime } = req.body;
+  const { foodType, quantity, location, availabilityTime, notifierID, description } =
+    req.body;
   try {
     const listing = await createListing(
       foodType,
       quantity,
       location,
       availabilityTime,
+      notifierID,
+      description,
       req.user._id.toString()
     );
-    console.log(listing);
     res.status(201).send(listing);
   } catch (err) {
     res.status(400).send(err.message);
@@ -34,14 +36,23 @@ async function getFoodListings(req, res) {
 }
 
 async function updateFoodListing(req, res) {
-  const { foodType, quantity, location, availabilityTime } = req.body;
+  const {
+    foodType,
+    quantity,
+    location,
+    availabilityTime,
+    description,
+    remaining,
+  } = req.body;
   try {
     const listing = await updateListing(
       req.params.id,
       foodType,
       quantity,
       location,
-      availabilityTime
+      availabilityTime,
+      description,
+      remaining
     );
     res.status(200).send(listing);
   } catch (err) {

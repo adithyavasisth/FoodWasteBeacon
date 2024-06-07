@@ -6,20 +6,13 @@ const {
   subscribe,
   unsubscribe,
   sendMessage,
-  previewMessage,
-  updateMessage,
+  previewMessage
 } = require("../controllers/bot/botController");
 
 router.get(
   "/notification/preview/:id",
   passport.authenticate("jwt", { session: false }),
   previewMessage
-);
-
-router.put(
-  "/notification/update/:id",
-  passport.authenticate("jwt", { session: false }),
-  updateMessage
 );
 
 router.post(
