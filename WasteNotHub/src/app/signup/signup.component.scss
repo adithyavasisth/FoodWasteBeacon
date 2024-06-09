@@ -1,0 +1,28 @@
+.signup-div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  .signup-card {
+    width: 100%;
+    max-width: 500px;
+    padding: 20px;
+
+    .signup-form {
+      min-width: 150px;
+      max-width: 500px;
+      width: 100%;
+
+      .input-field {
+        width: 100%;
+        padding: 10px 0px;
+      }
+
+      button {
+        width: 100%;
+        padding: 10px 0px;
+      }
+    }
+  }
+}

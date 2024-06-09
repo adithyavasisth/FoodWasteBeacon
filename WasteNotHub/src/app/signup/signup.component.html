@@ -1,0 +1,36 @@
+<div class="signup-div">
+  <mat-card class="signup-card">
+    <mat-card-content>
+      <form
+        [formGroup]="signupForm"
+        class="signup-form"
+        (ngSubmit)="handleSubmit()"
+      >
+        <mat-form-field class="input-field">
+          <mat-label>Enter your username</mat-label>
+          <input matInput formControlName="username" required />
+          @if (username?.hasError('required')) {
+          <mat-error>Username is <strong>required</strong></mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field class="input-field">
+          <mat-label>Enter your password</mat-label>
+          <input matInput formControlName="password" type="password" required />
+          @if (password?.hasError('required')) {
+          <mat-error>Password is <strong>required</strong></mat-error>
+          }
+        </mat-form-field>
+
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="!signupForm.valid"
+        >
+          Sign Up
+        </button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>
