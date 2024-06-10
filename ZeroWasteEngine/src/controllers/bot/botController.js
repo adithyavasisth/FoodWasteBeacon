@@ -22,11 +22,11 @@ async function subscribe(ctx) {
   try {
     await createSubscriber(id, first_name, last_name, username);
 
-    ctx.reply(
-      `Thank you ${
-        first_name ? first_name : last_name
-      } for subscribing to our notifications! You'll now receive updates on new food listings and more.`
-    );
+    ctx.reply(`Hello ${first_name ? first_name : last_name}! 
+
+Welcome to FoodWaste Beacon's SavorSignal Service. I am here to notify you about surplus food available on the VU Campus. You will receive food alerts from us whenever available.
+    
+Thank you for joining us in reducing food waste. Together we can make a difference!`);
   } catch (err) {
     ctx.reply(`You are already subscribed to our notifications.`);
   }
