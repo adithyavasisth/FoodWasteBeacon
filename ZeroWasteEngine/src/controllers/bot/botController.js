@@ -94,15 +94,42 @@ async function sendMessage(req, res) {
 
 bot.on("callback_query", async (ctx) => {
   const { action, listingId } = JSON.parse(ctx.update.callback_query.data);
-  const { userId } = ctx.update.callback_query.from;
+  const { id } = ctx.update.callback_query.from;
 
-  if (action === "interested") {
-    await updateInterestCount(listingId, userId);
-    await ctx.reply(
-      "Thank you for your interest! We have noted your response."
-    );
-  } else if (action === "not_interested") {
-    ctx.reply("Thank you for letting us know.");
+  try {
+    const listing = await findListingById(listingId);
+
+    if (action === "interested") {
+      if (listing.remaining === 0) {
+        ctx.reply("Sorry, this listing has been fully claimed.");
+        return;
+      }
+
+      try {
+        await updateInterestCount(listingId, id, true);
+        await ctx.reply(
+          `Thank you for your interest ${ctx.update.callback_query.from.first_name}! 
+Your interest has been noted. 
+          
+Please bring your own container to help us stay eco-friendly.
+Please arrive before the time indicated to get your share of the food.
+          
+Thank you for taking part in our effort to minimize food waste.`
+        );
+      } catch (err) {
+        ctx.reply("You have already shown interest in this listing.");
+      }
+    } else if (action === "not") {
+      try {
+        await updateInterestCount(listingId, id, false);
+        ctx.reply("Thank you for letting us know.");
+      } catch (err) {
+        ctx.reply("You have already indicated that you are not interested.");
+      }
+    }
+  } catch (err) {
+    ctx.reply("Sorry, this listing is no longer available.");
+    return;
   }
 
   ctx.editMessageReplyMarkup(undefined);

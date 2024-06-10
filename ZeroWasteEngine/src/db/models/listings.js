@@ -74,6 +74,7 @@ async function updateListing(
     description,
     remaining,
   };
+  updatedListing.message = await generateListingMessage(updatedListing);
 
   await client.connect();
   const database = client.db("ZeroWasteEngine");
@@ -115,20 +116,35 @@ async function findListingsByNotifierID(notifierID) {
   return listings.find({ notifierID }).toArray();
 }
 
-async function updateInterestCount(listingId, userId) {
+async function updateInterestCount(listingId, userId, add) {
   await client.connect();
   const database = client.db("ZeroWasteEngine");
   const listings = database.collection("listings");
   const listing = await listings.findOne({ _id: new ObjectId(listingId) });
+  var result;
 
-  if (listing.interestedUsers?.includes(userId)) {
-    throw new Error("User has already shown interest in this listing");
+  console.log(listing.interestedUsers, add);
+
+  if (add) {
+    if (listing.interestedUsers?.includes(userId)) {
+      throw new Error("User has already shown interest in this listing");
+    }
+
+    result = await listings.updateOne(
+      { _id: new ObjectId(listingId) },
+      { $addToSet: { interestedUsers: userId } }
+    );
+  } else {
+    console.log(listing.interestedUsers);
+    if (!listing.interestedUsers?.includes(userId)) {
+      throw new Error("User has not shown interest in this listing");
+    }
+
+    result = await listings.updateOne(
+      { _id: new ObjectId(listingId) },
+      { $pull: { interestedUsers: userId } }
+    );
   }
-
-  const result = await listings.updateOne(
-    { _id: new ObjectId(listingId) },
-    { $addToSet: { interestedUsers: userId } }
-  );
 
   if (result.matchedCount === 0) {
     throw new Error("No listing found with this id");

@@ -4,7 +4,16 @@
   padding: 20px;
 }
 mat-card-header {
+  display: flex;
   padding: 10px;
+
+  .spacer {
+    flex: 1 1 auto;
+  }
+
+  button {
+    align-self: flex-end;
+  }
 }
 
 .filter-card {

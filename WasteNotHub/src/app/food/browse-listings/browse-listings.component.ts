@@ -14,7 +14,7 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 
 import { FoodListing, FoodListingService } from '../food-listing.service';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 export const MY_DATE_FORMATS: MatDateFormats = {
@@ -43,6 +43,7 @@ export const MY_DATE_FORMATS: MatDateFormats = {
     MatButtonModule,
     MatIconModule,
     MatSnackBarModule,
+    RouterModule,
   ],
   providers: [provideMomentDateAdapter(MY_DATE_FORMATS)],
   templateUrl: './browse-listings.component.html',

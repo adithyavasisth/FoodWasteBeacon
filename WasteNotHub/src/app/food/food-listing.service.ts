@@ -19,6 +19,7 @@ export interface FoodListing {
 })
 export class FoodListingService {
   private apiUrl: string = 'http://localhost:3000/listing';
+  private botUrl: string = 'http://localhost:3000/bot/notification';
 
   constructor(private http: HttpClient) {}
 
@@ -45,5 +46,10 @@ export class FoodListingService {
   deleteListing(id: string) {
     const url = `${this.apiUrl}/delete/${id}`;
     return this.http.delete(url);
+  }
+
+  notifyUsers(id: string) {
+    const url = `${this.botUrl}/send/${id}`;
+    return this.http.post<any>(url, {});
   }
 }

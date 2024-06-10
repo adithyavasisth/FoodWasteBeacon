@@ -12,10 +12,27 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
+import { MatDateFormats, MatNativeDateModule } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
+import { MarkdownModule } from 'ngx-markdown';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { delay, switchMap } from 'rxjs/operators';
+import { timer } from 'rxjs';
+import { provideMomentDateAdapter } from '@angular/material-moment-adapter';
+
+export const MY_DATE_FORMATS: MatDateFormats = {
+  parse: {
+    dateInput: 'DD/MM/YYYY',
+  },
+  display: {
+    dateInput: 'DD/MM/YYYY',
+    monthYearLabel: 'MMM YYYY',
+    dateA11yLabel: 'LL',
+    monthYearA11yLabel: 'MMMM YYYY',
+  },
+};
 
 @Component({
   selector: 'app-view-listing',
@@ -33,7 +50,10 @@ import { CommonModule } from '@angular/common';
     FormsModule,
     CommonModule,
     RouterModule,
+    MarkdownModule,
+    MatSnackBarModule,
   ],
+  providers: [provideMomentDateAdapter(MY_DATE_FORMATS)],
   templateUrl: './view-listing.component.html',
   styleUrl: './view-listing.component.scss',
 })
@@ -48,6 +68,7 @@ export class ViewListingComponent implements OnInit {
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
+    private snackBar: MatSnackBar,
     private listingService: FoodListingService
   ) {
     this.listingForm = this.fb.group({
@@ -84,6 +105,14 @@ export class ViewListingComponent implements OnInit {
     const hours = date.getHours().toString().padStart(2, '0');
     const minutes = date.getMinutes().toString().padStart(2, '0');
     return `${hours}:${minutes}`;
+  }
+
+  sendNotification(id) {
+    timer(1000)
+      .pipe(switchMap(() => this.listingService.notifyUsers(id)))
+      .subscribe(() =>
+        this.snackBar.open('Notification Sent', 'Close', { duration: 2000 })
+      );
   }
 
   onSubmit(): void {

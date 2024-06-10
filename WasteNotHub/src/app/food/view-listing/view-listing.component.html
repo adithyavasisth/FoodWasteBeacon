@@ -91,15 +91,35 @@
       </mat-form-field>
 
       <!-- <p><strong>Notifier ID:</strong> {{ listing?.notifierID }}</p> -->
-      <p><strong>Message:</strong> {{ listing?.message ?? "None" }}</p>
+      <p><strong>Message:</strong></p>
+      <markdown ngPreserveWhitespaces [data]="listing.message"></markdown>
+
       <p>
         <strong>Interested Users:</strong>
         {{ listing ? listing.interestedUsers.length : 0 }}
       </p>
 
       <div class="button-group">
-        <button mat-raised-button color="primary" type="submit">Save</button>
-        <button mat-raised-button color="primary" [routerLink]="['/browse-listings']">
+        <button
+          mat-fab
+          extended
+          color="primary"
+          (click)="sendNotification(listing._id)"
+        >
+          <mat-icon>send</mat-icon>
+          Send Notification
+        </button>
+        <button mat-fab extended color="accent" type="submit">
+          <mat-icon>save</mat-icon>
+          Save
+        </button>
+        <button
+          mat-fab
+          extended
+          color="warn"
+          [routerLink]="['/browse-listings']"
+        >
+          <mat-icon>arrow_back</mat-icon>
           Back
         </button>
       </div>
