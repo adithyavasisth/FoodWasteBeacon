@@ -2,19 +2,26 @@ require("dotenv").config();
 const express = require("express");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
+const cors = require("cors");
 const passport = require("./src/auth/passportConfig");
 const { connect } = require("./src/db/connection");
 const authRoutes = require("./src/routes/authRoutes");
 const listingsRoutes = require("./src/routes/listingsRoutes");
 const botRoutes = require("./src/routes/botRoutes");
 const config = require("./config/dbconfig");
-const {
-  bot,
-} = require("./src/controllers/bot/botController");
+const { bot } = require("./src/controllers/bot/botController");
 
 const app = express();
 const port = 3000;
 
+app.use(
+  cors({
+    origin: "http://localhost:4200",
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    credentials: true,
+    allowedHeaders: "Content-Type, Authorization",
+  })
+);
 app.use(express.json()); // Middleware for parsing JSON bodies
 app.use(
   session({

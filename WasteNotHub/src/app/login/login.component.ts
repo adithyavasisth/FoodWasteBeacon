@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -12,6 +12,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { AuthService } from '../auth/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -27,13 +28,25 @@ import { Router } from '@angular/router';
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   loginForm = new FormGroup({
     username: new FormControl('', [Validators.required]),
     password: new FormControl('', [Validators.required]),
   });
 
-  constructor(private router: Router, private snackBar: MatSnackBar) {}
+  ngOnInit(): void {
+    this.authService.isLoggedIn().subscribe((isLoggedIn) => {
+      if (isLoggedIn) {
+        this.router.navigate(['/food-listing']);
+      }
+    });
+  }
+
+  constructor(
+    private router: Router,
+    private snackBar: MatSnackBar,
+    private authService: AuthService
+  ) {}
 
   get username() {
     return this.loginForm.get('username');
@@ -44,24 +57,21 @@ export class LoginComponent {
   }
 
   handleSubmit() {
-    if (
-      this.loginForm.valid &&
-      this.loginForm.value.username == 'admin' &&
-      this.loginForm.value.password == 'admin'
-    ) {
-      this.snackBar.open('Logged in', 'Close', {
-        duration: 2000,
-      });
-    } else {
-      console.log(this.loginForm.value);
-
-      this.snackBar.open(
-        'Please enter a valid username and password',
-        'Close',
-        {
-          duration: 2000,
-        }
-      );
+    if (this.loginForm.valid) {
+      const { username, password } = this.loginForm.value;
+      if (username && password) {
+        this.authService.login(username, password).subscribe({
+          next: () => {
+            this.snackBar.open('Login successful', 'Close', { duration: 2000 });
+            this.router.navigate(['/food-listing']);
+          },
+          error: () => {
+            this.snackBar.open('Invalid credentials', 'Close', {
+              duration: 2000,
+            });
+          },
+        });
+      }
     }
   }
 }

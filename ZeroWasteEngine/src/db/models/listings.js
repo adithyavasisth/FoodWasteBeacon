@@ -64,8 +64,7 @@ async function updateListing(
   location,
   availabilityTime,
   description,
-  remaining,
-  message
+  remaining
 ) {
   const updatedListing = {
     foodType,
@@ -74,7 +73,6 @@ async function updateListing(
     availabilityTime,
     description,
     remaining,
-    message,
   };
 
   await client.connect();
