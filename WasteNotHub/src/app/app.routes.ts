@@ -8,7 +8,7 @@ import { UploadListingComponent } from './food/upload-listing/upload-listing.com
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
-  { path: 'signup', component: SignupComponent },
+  // { path: 'signup', component: SignupComponent },
   {
     path: 'browse-listings',
     component: BrowseListingsComponent,

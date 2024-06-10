@@ -5,13 +5,13 @@
     <button mat-button *ngIf="!(isLoggedIn$ | async)" [routerLink]="['/login']">
       Login
     </button>
-    <button
+    <!-- <button
       mat-button
       *ngIf="!(isLoggedIn$ | async)"
       [routerLink]="['/signup']"
     >
       Sign Up
-    </button>
+    </button> -->
     <button mat-button *ngIf="isLoggedIn$ | async" (click)="logout()">
       Log Out
     </button>
